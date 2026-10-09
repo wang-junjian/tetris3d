@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 235 60% 4%;
+    --foreground: 60 9% 95%;
+    --card: 235 55% 6%;
+    --card-foreground: 60 9% 95%;
+    --popover: 235 55% 7%;
+    --popover-foreground: 60 9% 95%;
+    --primary: 238 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 235 30% 14%;
+    --secondary-foreground: 60 9% 95%;
+    --muted: 235 25% 16%;
+    --muted-foreground: 233 20% 62%;
+    --accent: 238 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 7 100% 65%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 238 60% 30%;
+    --input: 238 45% 24%;
+    --ring: 238 100% 65%;
+    --radius: 0.25rem;
+  }
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: #030412;
+  color: #f3f3f3;
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, "PingFang SC", "Microsoft YaHei", monospace;
+  overflow: hidden;
+}
+
+/* 点阵网格肌理 */
+.dot-grid {
+  background-image: radial-gradient(rgba(86, 96, 255, 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.font-pixel {
+  font-family: "Press Start 2P", "PingFang SC", "Microsoft YaHei", monospace;
+}
+
+.panel {
+  border: 1px solid rgba(86, 96, 255, 0.35);
+  background: rgba(6, 8, 30, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.panel-title {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: #7c86ff;
+  text-transform: uppercase;
+}
+
+.neon-text {
+  text-shadow: 0 0 12px rgba(86, 96, 255, 0.8), 0 0 34px rgba(86, 96, 255, 0.35);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(86, 96, 255, 0.4); }
