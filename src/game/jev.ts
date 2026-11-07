@@ -122,6 +122,11 @@ export async function jevChoosePlacement(
   }
 
   if (!res.ok) {
+    // 404/405 说明请求没打到 Hono 代理（例如 GitHub Pages 只托管静态文件的部署），
+    // 这时不必把整页 HTML 错误塞进日志，给一句能看懂的原因即可。
+    if (res.status === 404 || res.status === 405) {
+      throw new JevError('本站未部署后端代理（静态托管），无法调用 JEV', res.status);
+    }
     const text = await res.text().catch(() => '');
     throw new JevError(`Jev API 返回 HTTP ${res.status}${text ? `：${text.slice(0, 200)}` : ''}`, res.status);
   }

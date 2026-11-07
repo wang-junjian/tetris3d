@@ -154,7 +154,8 @@ export class GameEngine {
         if (e?.name === 'AbortError') {
           this.ev.onAiLog('JEV ✕ 请求超时，回退内置启发式引擎');
         } else {
-          this.ev.onAiLog(`JEV ✕ ${e?.message ?? e}，回退内置启发式引擎`);
+          // 日志面板宽度有限：错误信息截断，避免整页错误响应把 AI LOG 撑爆
+          this.ev.onAiLog(`JEV ✕ ${String(e?.message ?? e).slice(0, 120)}，回退内置启发式引擎`);
         }
         const best = bestPlacement(boardSnapshot, type);
         if (best) this.plan = { rot: best.rot, x: best.x };
