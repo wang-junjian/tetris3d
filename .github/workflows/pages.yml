@@ -40,7 +40,7 @@ jobs:
         run: npm run build:pages
 
       # 防「构建污染源码」：产物在 dist/ 下，本就不入库，因此 git diff 只检查被跟踪文件。
-      - name: Guard: build must not touch tracked files
+      - name: "Guard: build must not touch tracked files"
         run: git diff --exit-code
 
       - name: Sanity check site output
