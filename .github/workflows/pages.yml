@@ -1,0 +1,67 @@
+name: Deploy playable demo
+
+# 仓库只提交源码；可玩的静态站点是构建产物（dist/ 已被 .gitignore 忽略），
+# 由本工作流在每次 push 到 main 时重新构建，并以 GitHub Pages 的形式发布。
+#
+# 注意：Pages 只托管前端。Hono 后端（/api/jev/systemone 代理）不会部署，
+# 线上 JEV 请求会失败并自动回退内置启发式引擎（游戏不受影响，见 README）。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时刻只允许一个部署在跑，且不取消进行中的部署（避免站点短暂空档）。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run check
+
+      - name: Build static site
+        env:
+          # 项目站点位于 https://<user>.github.io/<repo>/，base 必须是仓库子路径。
+          VITE_BASE: /${{ github.event.repository.name }}/
+        run: npm run build:pages
+
+      # 防「构建污染源码」：产物在 dist/ 下，本就不入库，因此 git diff 只检查被跟踪文件。
+      - name: Guard: build must not touch tracked files
+        run: git diff --exit-code
+
+      - name: Sanity check site output
+        run: |
+          test -f dist/pages/index.html
+          test -f dist/pages/.nojekyll
+          test -f dist/pages/404.html
+          # index.html 必须引用带子路径前缀的产物，否则线上白屏。
+          grep -q "/${{ github.event.repository.name }}/assets/" dist/pages/index.html
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/pages
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

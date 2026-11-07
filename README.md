@@ -1,5 +1,7 @@
 # TETRIS·3D — 3D 俄罗斯方块（人类 / AI 双模式）
 
+**在线试玩：https://wangjunjian.com/tetris3d/**
+
 Three.js 打造的 3D 俄罗斯方块：发光机柜深井、圆角发光体素、消行动画。支持**人类手动**与 **AI 代玩**两种模式，AI 由两种决策引擎驱动：
 
 - **JEV 模型**：接入 TypeSafe 的 Jev（System One）模型，每步把棋盘状态与候选落点发给 Jev 的 Choice 原语，返回最优落点与置信度
@@ -39,6 +41,21 @@ Docker：
 docker build -t tetris3d .
 docker run -p 3000:3000 --env-file .env tetris3d
 ```
+
+## 部署到 GitHub Pages
+
+推送 `main` 即自动发布：`.github/workflows/pages.yml` 会 `npm ci` → 类型检查 → `npm run build:pages` → 上传 `dist/pages` 到 GitHub Pages。首次使用需在仓库 **Settings → Pages → Source** 选择 **GitHub Actions**。
+
+本地复现线上产物：
+
+```bash
+VITE_BASE=/tetris3d/ npm run build:pages   # 产物在 dist/pages
+```
+
+`scripts/build-pages.mjs` 做的只有三件事：带子路径 `base` 构建（项目站点是 `/<repo>/`，缺了它资源全部 404）、补 `.nojekyll`（跳过 Jekyll）、把 `index.html` 复制为 `404.html`（SPA 回退）。
+
+> **Pages 版本的能力边界**：GitHub Pages 只托管静态文件，Hono 后端不会部署，因此 `/api/jev/systemone` 代理在线上不存在。**JEV 模型模式在线上会自动回退内置启发式引擎**（引擎日志会提示 `JEV ✕ ... 回退内置启发式引擎`），人类模式与内置 AI 模式完全可用。需要线上跑 JEV 时，请部署完整后端（`npm run build && npm start` 或 Docker），或自行提供同源代理。
+
 
 ## 配置 Jev API Key
 
